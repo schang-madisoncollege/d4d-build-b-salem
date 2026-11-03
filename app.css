@@ -3,13 +3,121 @@
 /*
   Your design tokens. Write these by hand from your Figma variables panel.
   One line per variable. A Figma name like color/chalk/500 becomes --color-chalk-500.
-  Replace the example line below with your own tokens.
 
   "static" keeps every token in output.css, even ones no class uses yet,
   so sketch.js can read them.
+
+  Units: lengths are px at the 1080 x 1920 Display frame, angles are deg,
+  opacities are % (Figma stores opacity as a percentage), counts have no unit.
+  In sketch.js, parseFloat() reads any of them as a plain number.
 */
 @theme static {
-  --color-display-bg: #111111;
+  /* Primitives: five source colors from the Tree Care site visit */
+  --color-heartwood-100: #c8894a;
+  --color-heartwood-200: #a06e3b;
+  --color-heartwood-300: #78522c;
+  --color-heartwood-400: #50371e;
+  --color-heartwood-500: #281b0f;
+  --color-heartwood-600: #d3a16e;
+  --color-heartwood-700: #deb892;
+  --color-heartwood-800: #e9d0b7;
+  --color-heartwood-900: #f4e7db;
+  --color-sapwood-100: #e5d0a5;
+  --color-sapwood-200: #b7a684;
+  --color-sapwood-300: #897d63;
+  --color-sapwood-400: #5c5342;
+  --color-sapwood-500: #2e2a21;
+  --color-sapwood-600: #ead9b7;
+  --color-sapwood-700: #efe3c9;
+  --color-sapwood-800: #f5ecdb;
+  --color-sapwood-900: #faf6ed;
+  --color-bark-100: #3b3128;
+  --color-bark-200: #2f2720;
+  --color-bark-300: #231d18;
+  --color-bark-400: #181410;
+  --color-bark-500: #0c0a08;
+  --color-bark-600: #625a53;
+  --color-bark-700: #89837e;
+  --color-bark-800: #b1ada9;
+  --color-bark-900: #d8d6d4;
+  --color-lichen-100: #9aa77c;
+  --color-lichen-200: #7b8663;
+  --color-lichen-300: #5c644a;
+  --color-lichen-400: #3e4332;
+  --color-lichen-500: #1f2119;
+  --color-lichen-600: #aeb996;
+  --color-lichen-700: #c2cab0;
+  --color-lichen-800: #d7dccb;
+  --color-lichen-900: #ebede5;
+  --color-hivis-100: #f2662b;
+  --color-hivis-200: #c25222;
+  --color-hivis-300: #913d1a;
+  --color-hivis-400: #612911;
+  --color-hivis-500: #301409;
+  --color-hivis-600: #f58555;
+  --color-hivis-700: #f7a380;
+  --color-hivis-800: #fac2aa;
+  --color-hivis-900: #fce0d5;
+
+  /* Display: artwork geometry */
+  --ring-center-x: 595px;
+  --ring-center-y: 1224px;
+  --ring-spacing-min: 30px;
+  --ring-spacing-max: 90px;
+  --ring-stroke-thin: 4px;
+  --ring-stroke-heavy: 12px;
+  --ring-heavy-every: 4;
+  --ring-thin-opacity: 55%;
+  --rope-pivot-x: 415px;
+  --rope-pivot-y: -102px;
+  --rope-width: 32px;
+  --rope-stripe-period: 42px;
+  --rope-stripe-angle: 45deg;
+  --rope-lean-max: 32deg;
+  --line-width: 12px;
+  --line-offset: 50px;
+  --streak-length: 111px;
+  --streak-width: 4px;
+  --streak-opacity: 55%;
+  --streak-count-max: 48;
+  --wet-opacity-max: 60%;
+  --veil-opacity-max: 55%;
+  --space-safe: 64px;
+  --caption-height: 360px;
+
+  /* Display: semantic colors */
+  --color-ground: var(--color-sapwood-100);
+  --color-ring-cold: var(--color-lichen-100);
+  --color-ring-warm: var(--color-heartwood-300);
+  --color-rope-a: var(--color-hivis-100);
+  --color-rope-b: var(--color-hivis-200);
+  --color-line: var(--color-heartwood-300);
+  --color-wet: var(--color-bark-100);
+  --color-veil: var(--color-lichen-700);
+  --color-streak: var(--color-sapwood-100);
+  --color-caption-bg: var(--color-bark-200);
+  --color-caption-text: var(--color-sapwood-100);
+  --color-accent: var(--color-hivis-100);
+
+  /* Panel: touchscreen */
+  --panel-color-bg: var(--color-bark-200);
+  --panel-color-surface: var(--color-bark-100);
+  --panel-color-rail: var(--color-bark-600);
+  --panel-color-text: var(--color-sapwood-100);
+  --panel-color-text-muted: var(--color-bark-800);
+  --panel-color-accent: var(--color-hivis-100);
+  --panel-color-on-accent: var(--color-bark-500);
+  --panel-color-thumb: var(--color-sapwood-100);
+  --panel-color-divider: var(--color-bark-600);
+  --panel-space-s: 16px;
+  --panel-space-m: 32px;
+  --panel-space-l: 64px;
+  --panel-radius-control: 32px;
+  --panel-radius-pill: 64px;
+  --panel-size-target-min: 96px;
+  --panel-size-button: 128px;
+  --panel-size-thumb: 88px;
+  --panel-size-nav: 136px;
 }
 
 /* Preview only: scales the full-size Display to fit your browser window. */
