@@ -12,7 +12,7 @@ let bg;
 function setup() {
   pixelDensity(1); // keeps the canvas at true Display size on high-density laptop screens
   createCanvas(DISPLAY_W, DISPLAY_H).parent('display');
-  bg = token('--color-display-bg');
+  bg = token('--color-ground');
 }
 
 function draw() {
