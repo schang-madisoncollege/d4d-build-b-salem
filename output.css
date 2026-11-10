@@ -260,6 +260,9 @@
   }
 }
 @layer utilities {
+  .visible {
+    visibility: visible;
+  }
   .m-0 {
     margin: 0px;
   }
