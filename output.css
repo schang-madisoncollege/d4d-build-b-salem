@@ -362,6 +362,9 @@
   .h-\(--panel-size-nav\) {
     height: var(--panel-size-nav);
   }
+  .h-\(--panel-size-top-region\) {
+    height: var(--panel-size-top-region);
+  }
   .h-screen {
     height: 100vh;
   }
@@ -373,6 +376,9 @@
   }
   .flex-1 {
     flex: 1;
+  }
+  .shrink-0 {
+    flex-shrink: 0;
   }
   .transform {
     transform: var(--tw-rotate-x,) var(--tw-rotate-y,) var(--tw-rotate-z,) var(--tw-skew-x,) var(--tw-skew-y,);
@@ -431,9 +437,6 @@
   .overflow-hidden {
     overflow: hidden;
   }
-  .rounded {
-    border-radius: 0.25rem;
-  }
   .rounded-\(--panel-radius-control\) {
     border-radius: var(--panel-radius-control);
   }
@@ -473,6 +476,9 @@
   }
   .bg-sapwood-100 {
     background-color: var(--color-sapwood-100);
+  }
+  .p-\(--panel-space-l\) {
+    padding: var(--panel-space-l);
   }
   .p-\(--panel-space-m\) {
     padding: var(--panel-space-m);

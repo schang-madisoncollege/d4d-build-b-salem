@@ -35,11 +35,15 @@
     </div>
 
     <!-- Live -->
-    <section id="screen-live" role="tabpanel" aria-labelledby="back-to-live" class="flex flex-1 flex-col px-(--panel-space-l) pt-(--panel-space-l)">
-      <h1 class="text-title font-semibold">Live weather</h1>
-      <p id="live-updated" class="text-body font-medium text-(--panel-color-text-muted)">Madison, WI</p>
+    <section id="screen-live" role="tabpanel" aria-labelledby="back-to-live" class="flex flex-1 flex-col">
+      <!-- Top region (SPEC.md Touchscreen): no controls in here. -->
+      <header class="h-(--panel-size-top-region) shrink-0 p-(--panel-space-l)">
+        <h1 class="text-title font-semibold">Live weather</h1>
+        <p id="live-updated" class="text-body font-medium text-(--panel-color-text-muted)">Madison, WI</p>
+      </header>
 
-      <div class="flex flex-1 flex-col items-center justify-center gap-(--panel-space-l)">
+      <!-- Readings, Take control, and hint: one stack, centered between the top region and the nav. -->
+      <div class="flex flex-1 flex-col items-center justify-center gap-(--panel-space-m)">
         <p class="flex gap-(--panel-space-l) text-display font-semibold" aria-label="Current weather">
           <span id="live-temperature"></span>
           <span id="live-wind"></span>
