@@ -1,5 +1,13 @@
 @import url("https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&display=swap");
 @import "tailwindcss";
+@source not "./SPEC.md";
+@source not "./README.md";
+@source not "./CLAUDE.md";
+@source not "./tests";
+@source not "./design";
+@source not "./.github";
+@source not "./snapshot.json";
+@source not "./package.json";
 
 /*
   Your design tokens. Write these by hand from your Figma variables panel.
