@@ -62,6 +62,7 @@
     --font-display: "Oswald", sans-serif;
     --text-display: 88px;
     --text-title: 72px;
+    --text-title--line-height: 1.2;
     --text-heading: 64px;
     --text-action: 48px;
     --text-nav: 44px;
@@ -69,10 +70,12 @@
     --text-label: 32px;
     --text-small: 28px;
     --text-caption-value: 91px;
+    --text-caption-value--line-height: 1.2;
     --text-caption-unit: 72px;
     --text-caption-label: 26px;
     --text-caption-credit: 25px;
     --tracking-caption-label: 0.2em;
+    --tracking-panel-label: 0.12em;
     --ring-center-x: 595px;
     --ring-center-y: 1224px;
     --ring-spacing-min: 30px;
@@ -134,6 +137,12 @@
     --panel-size-nav: 136px;
     --panel-size-rail: 16px;
     --panel-border-chip: 3px;
+    --panel-size-top-region: 360px;
+    --panel-size-indicator: 8px;
+    --panel-size-toggle-option: 280px;
+    --panel-size-swatch: 128px;
+    --panel-radius-swatch: 16px;
+    --panel-border-thumb: 8px;
   }
 }
 @layer base {
@@ -422,6 +431,9 @@
   .overflow-hidden {
     overflow: hidden;
   }
+  .rounded {
+    border-radius: 0.25rem;
+  }
   .rounded-\(--panel-radius-control\) {
     border-radius: var(--panel-radius-control);
   }
@@ -498,6 +510,14 @@
   .font-display {
     font-family: var(--font-display);
   }
+  .text-caption-value {
+    font-size: var(--text-caption-value);
+    line-height: var(--tw-leading, var(--text-caption-value--line-height));
+  }
+  .text-title {
+    font-size: var(--text-title);
+    line-height: var(--tw-leading, var(--text-title--line-height));
+  }
   .text-action {
     font-size: var(--text-action);
   }
@@ -513,9 +533,6 @@
   .text-caption-unit {
     font-size: var(--text-caption-unit);
   }
-  .text-caption-value {
-    font-size: var(--text-caption-value);
-  }
   .text-display {
     font-size: var(--text-display);
   }
@@ -530,9 +547,6 @@
   }
   .text-small {
     font-size: var(--text-small);
-  }
-  .text-title {
-    font-size: var(--text-title);
   }
   .font-medium {
     --tw-font-weight: var(--font-weight-medium);
@@ -589,48 +603,6 @@
   height: 100vh !important;
   width: auto !important;
   margin: 0 auto;
-}
-@layer components {
-  .panel-slider {
-    --thumb-half: calc(var(--panel-size-thumb) / 2);
-    --fill-at: calc(var(--thumb-half) + (100% - var(--panel-size-thumb)) * var(--fill, 0));
-    --rail: linear-gradient(
-      to right,
-      transparent var(--thumb-half),
-      var(--panel-color-accent) var(--thumb-half) var(--fill-at),
-      var(--panel-color-rail) var(--fill-at) calc(100% - var(--thumb-half)),
-      transparent calc(100% - var(--thumb-half))
-    );
-    appearance: none;
-    width: 100%;
-    height: var(--panel-size-target-min);
-    margin: 0;
-    background: transparent;
-  }
-  .panel-slider::-webkit-slider-runnable-track {
-    height: var(--panel-size-rail);
-    background: var(--rail);
-  }
-  .panel-slider::-moz-range-track {
-    height: var(--panel-size-rail);
-    background: var(--rail);
-  }
-  .panel-slider::-webkit-slider-thumb {
-    appearance: none;
-    width: var(--panel-size-thumb);
-    height: var(--panel-size-thumb);
-    margin-top: calc((var(--panel-size-rail) - var(--panel-size-thumb)) / 2);
-    border: 0;
-    border-radius: var(--panel-radius-pill);
-    background: var(--panel-color-thumb);
-  }
-  .panel-slider::-moz-range-thumb {
-    width: var(--panel-size-thumb);
-    height: var(--panel-size-thumb);
-    border: 0;
-    border-radius: var(--panel-radius-pill);
-    background: var(--panel-color-thumb);
-  }
 }
 @property --tw-rotate-x {
   syntax: "*";

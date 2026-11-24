@@ -88,10 +88,20 @@
   rainSlider.addEventListener("input", showRain);
   showRain();
 
-  function clockText(isoLocal) {
-    // Open-Meteo returns local time (timezone=America/Chicago) as "YYYY-MM-DDTHH:MM".
-    const [h, m] = isoLocal.slice(11, 16).split(":").map(Number);
-    return `${h % 12 || 12}:${String(m).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`;
+  // weather.js does not send a timezone, so Open-Meteo returns times in UTC
+  // as "YYYY-MM-DDTHH:MM". Show them in Madison time (SPEC.md Inputs:
+  // America/Chicago), never in the kiosk's own timezone.
+  const madisonClock = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Chicago",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+
+  function clockText(isoUtc) {
+    const parts = madisonClock.formatToParts(new Date(`${isoUtc}Z`));
+    const part = (type) => parts.find((p) => p.type === type).value;
+    return `${part("hour")}:${part("minute")} ${part("dayPeriod")}`;
   }
 
   function setText(id, text) {
