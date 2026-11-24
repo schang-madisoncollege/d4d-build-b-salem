@@ -30,21 +30,27 @@
         Add or remove sliders to match your SPEC.md.
       -->
       <div>
-        <label for="wind">Wind speed</label>
-        <input type="range" id="wind" data-variable="wind_speed_10m" data-unit="mph" min="0" max="40" step="1" value="0">
-        <output for="wind"></output>
-      </div>
-
-       <div>
-        <label for="direction">Wind direction</label>
-<input type="range" id="direction" data-variable="wind_direction_10m" data-unit="°" min="0" max="360" step="1" value="0">
-        <output for="direction"></output>
+        <label for="temperature">Temperature</label>
+        <input type="range" id="temperature" data-variable="temperature_2m" data-unit="°F" min="-10" max="90" step="1" value="50">
+        <output for="temperature"></output>
       </div>
 
       <div>
-        <label for="temperature">Temperature</label>
-        <input type="range" id="temperature" data-variable="temperature_2m" data-unit="°F" min="-10" max="95" step="1" value="40">
-        <output for="temperature"></output>
+        <label for="wind">Wind</label>
+        <input type="range" id="wind" data-variable="wind_speed_10m" data-unit="mph" min="0" max="40" step="1" value="8">
+        <output for="wind"></output>
+      </div>
+
+      <div>
+        <label for="rain">Rain</label>
+        <input type="range" id="rain" data-variable="precipitation" data-unit="mm/h" min="0" max="10" step="1" value="0">
+        <output for="rain"></output>
+      </div>
+
+      <div>
+        <label for="cloud">Cloud</label>
+        <input type="range" id="cloud" data-variable="cloud_cover" data-unit="%" min="0" max="100" step="1" value="40">
+        <output for="cloud"></output>
       </div>
 
       <button type="button" id="back-to-live">Back to live weather</button>

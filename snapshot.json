@@ -1,0 +1,11 @@
+{
+  "source": "Open-Meteo current conditions, Madison, WI (43.07, -89.40), captured for the bundled snapshot",
+  "time": "2026-11-24T09:00",
+  "timezone": "America/Chicago",
+  "values": {
+    "temperature_2m": 23.4,
+    "wind_speed_10m": 1.8,
+    "precipitation": 0,
+    "cloud_cover": 14
+  }
+}

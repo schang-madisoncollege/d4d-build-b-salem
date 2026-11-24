@@ -7,10 +7,56 @@
     <link rel="stylesheet" href="output.css" />
   </head>
   <body class="m-0 overflow-hidden bg-black">
-    <main id="display"></main>
+    <main id="display" class="relative">
+      <!--
+        Caption (SPEC.md Composition, layer 8): HTML over the canvas, sized in
+        1080 x 1920 frame px. sketch.js scales and places it on the canvas.
+      -->
+      <section
+        id="caption"
+        aria-label="Current conditions"
+        class="absolute bottom-0 left-0 flex h-(--caption-height) flex-col justify-between bg-caption-bg px-(--space-safe) pt-(--caption-pad-top) pb-(--caption-pad-bottom) font-display text-caption-text"
+      >
+        <div aria-hidden="true" class="absolute inset-x-0 top-0 h-(--caption-rule) bg-accent"></div>
 
-    <!-- Open-Meteo requires this credit wherever its data is displayed. -->
-    <!-- <p><a href="https://open-meteo.com/">Weather data by Open-Meteo.com</a></p> -->
+        <dl class="flex justify-between font-semibold">
+          <div class="flex flex-col gap-(--caption-label-gap)">
+            <dt class="text-caption-label tracking-caption-label">TEMP</dt>
+            <dd class="flex items-baseline gap-(--caption-unit-gap)">
+              <span class="text-caption-value" data-reading="temperature_2m"></span>
+              <span class="text-caption-unit" data-unit="temperature_2m">°F</span>
+            </dd>
+          </div>
+          <div class="flex flex-col gap-(--caption-label-gap)">
+            <dt class="text-caption-label tracking-caption-label">WIND</dt>
+            <dd class="flex items-baseline gap-(--caption-unit-gap)">
+              <span class="text-caption-value" data-reading="wind_speed_10m"></span>
+              <span class="text-caption-unit" data-unit="wind_speed_10m">mph</span>
+            </dd>
+          </div>
+          <div class="flex flex-col gap-(--caption-label-gap)">
+            <dt class="text-caption-label tracking-caption-label">RAIN</dt>
+            <dd class="flex items-baseline gap-(--caption-unit-gap)">
+              <span class="text-caption-value" data-reading="precipitation"></span>
+              <span class="text-caption-unit" data-unit="precipitation">mm/h</span>
+            </dd>
+          </div>
+          <div class="flex flex-col gap-(--caption-label-gap)">
+            <dt class="text-caption-label tracking-caption-label">CLOUD</dt>
+            <dd class="flex items-baseline gap-(--caption-unit-gap)">
+              <span class="text-caption-value" data-reading="cloud_cover"></span>
+              <span class="text-caption-unit" data-unit="cloud_cover">%</span>
+            </dd>
+          </div>
+        </dl>
+
+        <div class="flex justify-between text-caption-credit font-medium">
+          <p id="caption-source">Snapshot weather · Madison, WI</p>
+          <!-- Open-Meteo requires this credit wherever its data is displayed. -->
+          <p><a href="https://open-meteo.com/">Weather data by Open-Meteo.com · CC BY 4.0</a></p>
+        </div>
+      </section>
+    </main>
 
     <script src="https://cdn.jsdelivr.net/npm/p5@2.3.4/lib/p5.min.js"></script>
     <script src="channel.js"></script>

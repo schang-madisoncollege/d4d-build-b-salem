@@ -15,20 +15,20 @@ const WEATHER_SETTINGS = {
 
   // The Open-Meteo variables in the Inputs section of your SPEC.md.
   // Use the names from the Current Weather list at open-meteo.com/en/docs.
-  variables: ["temperature_2m", "wind_speed_10m", "wind_direction_10m", "precipitation"],
+  variables: ["temperature_2m", "wind_speed_10m", "precipitation", "cloud_cover"],
 
   // Units. Match the "Range in" column of your mapping table.
   temperature_unit: "fahrenheit",
   wind_speed_unit: "mph",
-  precipitation_unit: "inch",
+  precipitation_unit: "mm",
 
   // Minutes between weather checks. Open-Meteo's current conditions come
   // from 15-minute data, so checking more often gains nothing.
-  refreshMinutes: 10,
+  refreshMinutes: 15,
 
   // Minutes the touchscreen's weather stays on the Display before live
   // weather comes back. Every new touch restarts the count.
-  overrideMinutes: 2,
+  overrideMinutes: 3,
 };
 
 const Weather = (() => {
@@ -61,6 +61,11 @@ const Weather = (() => {
       if (!response.ok) throw new Error(`Open-Meteo answered ${response.status}`);
       const data = await response.json();
       s.variables.forEach((name) => { live[name] = data.current[name]; });
+      // Build B (SPEC.md Inputs): current precipitation is a sum over
+      // data.current.interval seconds. Store it as mm/h.
+      if (typeof live.precipitation === "number" && data.current.interval) {
+        live.precipitation = (live.precipitation * 3600) / data.current.interval;
+      }
       updatedAt = data.current.time;
     } catch (error) {
       console.warn("Weather check failed. The Display keeps its last values.", error);

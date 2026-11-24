@@ -19,7 +19,7 @@ Partner program: [Madison College Tree Care](https://madisoncollege.edu/academic
 | Precipitation | `precipitation` | mm, converted to mm/h | 0 to 10 mm/h (typical 0) | Every 15 min. Current precipitation is a sum over the response `interval` (seconds), so mm/h = value × 3600 / interval. History and scrub use hourly `precipitation`, which is already a preceding-hour sum. |
 | Cloud cover | `cloud_cover` | % | 0 to 100% (typical 40) | Every 15 min |
 
-Location: Madison, WI, latitude 43.07, longitude −89.40, `timezone=America/Chicago`. Values outside a range clamp to its end. When the fetch fails, the bundled snapshot drives the piece and the caption reads "Snapshot weather" instead of "Live weather".
+Location: Madison, WI, latitude 43.07, longitude −89.40, `timezone=America/Chicago`. Values outside a range clamp to its end. The bundled snapshot drives the piece at startup until the first live fetch arrives, and whenever a fetch fails; while it does, the caption reads "Snapshot weather" instead of "Live weather".
 
 Weather data comes from Open-Meteo. Credit line: "Weather data by Open-Meteo.com", linked to https://open-meteo.com/, shown on the Display, in the caption bar (bottom right, Oswald Medium 25 px, color/sapwood/100 on color/bark/200), and on the touchscreen under the status chip on every screen (Oswald Medium 28 px, color/bark/800 on color/bark/200). Both read "Weather data by Open-Meteo.com · CC BY 4.0".
 
@@ -63,11 +63,11 @@ Layer order, bottom to top, at 1080 × 1920:
 1. Ground: `color/ground` (color/sapwood/100), full frame.
 2. Growth rings: concentric circles centered at (595, 1224). Radius of ring k = k × spacing. Every 4th ring is heavy (12 px); the others are thin (4 px) at 55% opacity. Rings continue past the frame edges.
 3. Wet overlay: `color/wet` at wetness × 60%.
-4. Climbing rope: 32 px wide, hanging from a pivot at (415, −102) above the frame and leaning by the wind angle. Tiled from the component Rope / Tile: one 42 px repeat holding a Hi-vis/100 band and a Hi-vis/200 band at 45° to the rope axis.
+4. Climbing rope: 32 px wide, hanging from a pivot at (415, −102) above the frame and leaning by the wind angle. Tiled from the component Rope / Tile: one 42 px repeat split equally into a color/hivis/100 band and a color/hivis/200 band (21 px each), at 45° to the rope axis.
 5. Second line: `color/line`, 12 px, parallel to the rope, its center 50 px to the right of the rope's center.
 6. Cloud veil: `color/veil` at cloud × 55%.
-7. Rain: the component Rain / Streak (4 × 111 px, Sapwood/100 at 55%), rotated to the rope's lean and scattered with a fixed seed.
-8. Caption: the component Weather / Current conditions, 1080 × 360, pinned to the bottom. Its top accent rule is `color/accent`.
+7. Rain: the component Rain / Streak (4 × 111 px, Sapwood/100 at 55%), rotated to the rope's lean and scattered with fixed random seed 1, so the streaks stay put between redraws.
+8. Caption: the component Weather / Current conditions, 1080 × 360, pinned to the bottom. Build it as HTML laid over the canvas, not drawn into it, so the text stays crisp and readable by screen readers. It is a vertical flex box: padding `--caption-pad-top`, `--space-safe` on both sides, and `--caption-pad-bottom`, with the rows spread apart (space-between). Across the top runs a `--caption-rule`-tall bar in `--color-accent`. Row 1 holds four readings (TEMP, WIND, RAIN, CLOUD), spread apart. Each one is a label (`--text-caption-label`, letter spacing `--tracking-caption-label`) above a reading, with `--caption-label-gap` between them. The reading is a value (`--text-caption-value`) and a unit (`--text-caption-unit`) aligned on their baseline, `--caption-unit-gap` apart. At 0 mm/h rain, the rain reading is "None", with no unit. Row 2 has the location on the left ("Live weather · Madison, WI", or "Snapshot weather · Madison, WI") and the data credit on the right, both `--text-caption-credit`. Text is `--color-caption-text` on `--color-caption-bg`: Oswald SemiBold for readings and labels, Medium for row 2.
 
 ## Acceptance checks
 
@@ -167,6 +167,11 @@ CSS names below follow the pattern `--color-<source>-<step>`, converted directly
 | veil/opacity-max | --veil-opacity-max | 55% |
 | space/safe | --space-safe | 64px |
 | caption/height | --caption-height | 360px |
+| caption/rule | --caption-rule | 8px |
+| caption/pad-top | --caption-pad-top | 52px |
+| caption/pad-bottom | --caption-pad-bottom | 36px |
+| caption/label-gap | --caption-label-gap | 4px |
+| caption/unit-gap | --caption-unit-gap | 4px |
 | color/ground | --color-ground | var(--color-sapwood-100) |
 | color/ring-cold | --color-ring-cold | var(--color-lichen-100) |
 | color/ring-warm | --color-ring-warm | var(--color-heartwood-300) |
@@ -224,6 +229,7 @@ Units in app.css: lengths in px at the 1080 × 1920 frame, angles in deg, opacit
 | text/caption-unit | --text-caption-unit | 72px |
 | text/caption-label | --text-caption-label | 26px |
 | text/caption-credit | --text-caption-credit | 25px |
+| tracking/caption-label | --tracking-caption-label | 0.2em |
 
 Tailwind v4 turns `--font-*` into `font-*` classes and `--text-*` into `text-*` classes. Every text layer in the Figma file is bound to one of these sizes.
 

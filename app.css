@@ -76,6 +76,7 @@
   --text-caption-unit: 72px;
   --text-caption-label: 26px;
   --text-caption-credit: 25px;
+  --tracking-caption-label: 0.2em;
 
   /* Display: artwork geometry */
   --ring-center-x: 595px;
@@ -102,6 +103,11 @@
   --veil-opacity-max: 55%;
   --space-safe: 64px;
   --caption-height: 360px;
+  --caption-rule: 8px;
+  --caption-pad-top: 52px;
+  --caption-pad-bottom: 36px;
+  --caption-label-gap: 4px;
+  --caption-unit-gap: 4px;
 
   /* Display: semantic colors */
   --color-ground: var(--color-sapwood-100);
