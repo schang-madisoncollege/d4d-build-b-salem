@@ -211,6 +211,12 @@ Units in app.css: lengths in px at the 1080 × 1920 frame, angles in deg, opacit
 | panel/size/nav | --panel-size-nav | 136px |
 | panel/size/rail | --panel-size-rail | 16px |
 | panel/border/chip | --panel-border-chip | 3px |
+| panel/size/top-region | --panel-size-top-region | 360px |
+| panel/size/indicator | --panel-size-indicator | 8px |
+| panel/size/toggle-option | --panel-size-toggle-option | 280px |
+| panel/size/swatch | --panel-size-swatch | 128px |
+| panel/radius/swatch | --panel-radius-swatch | 16px |
+| panel/border/thumb | --panel-border-thumb | 8px |
 
 **Type** (Oswald from Google Fonts, SIL Open Font License 1.1; weights 500 Medium and 600 SemiBold)
 
@@ -219,6 +225,7 @@ Units in app.css: lengths in px at the 1080 × 1920 frame, angles in deg, opacit
 | font/display | --font-display | "Oswald", sans-serif |
 | text/display | --text-display | 88px |
 | text/title | --text-title | 72px |
+| text/title--line-height | --text-title--line-height | 1.2 |
 | text/heading | --text-heading | 64px |
 | text/action | --text-action | 48px |
 | text/nav | --text-nav | 44px |
@@ -231,6 +238,7 @@ Units in app.css: lengths in px at the 1080 × 1920 frame, angles in deg, opacit
 | text/caption-label | --text-caption-label | 26px |
 | text/caption-credit | --text-caption-credit | 25px |
 | tracking/caption-label | --tracking-caption-label | 0.2em |
+| tracking/panel-label | --tracking-panel-label | 0.12em |
 
 Tailwind v4 turns `--font-*` into `font-*` classes and `--text-*` into `text-*` classes. Every text layer in the Figma file is bound to one of these sizes.
 
@@ -240,7 +248,7 @@ Designed: page Control Panel, at 1920 × 1080 landscape.
 
 | Screen | Control | Mapping row it drives |
 |---|---|---|
-| Live | "Take control" button | None. Opens Set conditions and starts the 3-minute countdown. |
+| Live | "Take control" button | None. Opens Set conditions and starts the 3-minute countdown. The Live screen also shows the current readings as text (rain as in/h, or "No rain" when dry) and the chip reads "Showing live weather". |
 | Set conditions | Temperature slider, −10 to 90 °F | Row 1 (ring spacing) and row 2 (ring color) |
 | Set conditions | Wind slider, 0 to 40 mph | Row 3 (rope lean) |
 | Set conditions | Rain slider, 0 to 0.4 in/h | Row 4 (wetness) |
@@ -252,7 +260,7 @@ Designed: page Control Panel, at 1920 × 1080 landscape.
 | Presets | Deep cold tile: −8 °F, 12 mph, 0 in/h, 0% | All five rows |
 | Every screen | Nav tabs: Live, Set conditions, Scrub time, Presets | None, except that Live returns all five rows to live weather immediately |
 
-Every screen uses the same frame: a top third (y 0–360, marked with a guide) that holds Panel / Status only, the controls below it, and a bottom nav of four Panel / Nav tab instances (440 × 136). Touch targets: buttons 128 px tall, slider tracks 96 px with an 88 px thumb, toggle options 280 × 112, tiles 540 × 400. There are no hover states and no typing. The status chip reads "Live weather returns in m:ss" and counts down from 3:00 after the last touch; at 0:00 the touchscreen returns to Live and the Display returns to live weather. An active tab shows a surface fill and an orange underline, so selection is never shown by color alone.
+Every screen uses the same frame. The top region is `--panel-size-top-region` tall (360 px, marked with a guide), with `--panel-space-l` padding, and holds only Panel / Status and the data credit. The credit on the touchscreen is plain text, not a link, so a tap can't navigate the kiosk away. Below it sit the controls, then a bottom nav of four equal-width Panel / Nav tab instances, `--panel-size-nav` tall, `--panel-space-m` apart, with `--panel-space-m` below. The active tab shows a `--panel-size-target-min` × `--panel-size-indicator` bar in the accent color. Touch targets: buttons 128 px tall, slider tracks 96 px with an 88 px thumb ringed by `--panel-border-thumb` in the accent color, toggle options `--panel-size-toggle-option` × 96 and equal in width, and preset tiles in three equal columns `--panel-space-l` apart, 400 tall, padded `--panel-space-m`, with a `--panel-size-swatch` preview rounded `--panel-radius-swatch`. Slider rows are two equal columns `--panel-space-l` apart. Slider labels use `--tracking-panel-label`. Rails and fills have fully rounded ends. There are no hover states and no typing. The status chip reads "Live weather returns in m:ss" and counts down from 3:00 after the last touch; at 0:00 the touchscreen returns to Live and the Display returns to live weather. An active tab shows a surface fill and an orange underline, so selection is never shown by color alone.
 
 Slider positions are the variants Position=0 to Position=100 in steps of 5. Choose round((value − min) / (max − min) × 20) × 5.
 

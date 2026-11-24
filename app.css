@@ -1,13 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&display=swap");
 @import "tailwindcss";
-@source not "./SPEC.md";
-@source not "./README.md";
-@source not "./CLAUDE.md";
-@source not "./tests";
-@source not "./design";
-@source not "./.github";
-@source not "./snapshot.json";
-@source not "./package.json";
 
 /*
   Your design tokens. Write these by hand from your Figma variables panel.
@@ -74,6 +66,7 @@
   --font-display: "Oswald", sans-serif;
   --text-display: 88px;
   --text-title: 72px;
+  --text-title--line-height: 1.2;
   --text-heading: 64px;
   --text-action: 48px;
   --text-nav: 44px;
@@ -81,10 +74,12 @@
   --text-label: 32px;
   --text-small: 28px;
   --text-caption-value: 91px;
+  --text-caption-value--line-height: 1.2;
   --text-caption-unit: 72px;
   --text-caption-label: 26px;
   --text-caption-credit: 25px;
   --tracking-caption-label: 0.2em;
+  --tracking-panel-label: 0.12em;
 
   /* Display: artwork geometry */
   --ring-center-x: 595px;
@@ -152,6 +147,12 @@
   --panel-size-nav: 136px;
   --panel-size-rail: 16px;
   --panel-border-chip: 3px;
+  --panel-size-top-region: 360px;
+  --panel-size-indicator: 8px;
+  --panel-size-toggle-option: 280px;
+  --panel-size-swatch: 128px;
+  --panel-radius-swatch: 16px;
+  --panel-border-thumb: 8px;
 }
 
 /* Preview only: scales the full-size Display to fit your browser window. */
@@ -160,56 +161,4 @@
   height: 100vh !important;
   width: auto !important;
   margin: 0 auto;
-}
-
-/*
-  Touchscreen slider (Panel / Slider). The input is the full touch target
-  (--panel-size-target-min); the rail runs between the thumb's centers at either end, filled up
-  to the thumb. panel.js sets --fill (0 to 1) from the slider's value.
-*/
-@layer components {
-  .panel-slider {
-    --thumb-half: calc(var(--panel-size-thumb) / 2);
-    --fill-at: calc(var(--thumb-half) + (100% - var(--panel-size-thumb)) * var(--fill, 0));
-    --rail: linear-gradient(
-      to right,
-      transparent var(--thumb-half),
-      var(--panel-color-accent) var(--thumb-half) var(--fill-at),
-      var(--panel-color-rail) var(--fill-at) calc(100% - var(--thumb-half)),
-      transparent calc(100% - var(--thumb-half))
-    );
-    appearance: none;
-    width: 100%;
-    height: var(--panel-size-target-min);
-    margin: 0;
-    background: transparent;
-  }
-
-  .panel-slider::-webkit-slider-runnable-track {
-    height: var(--panel-size-rail);
-    background: var(--rail);
-  }
-
-  .panel-slider::-moz-range-track {
-    height: var(--panel-size-rail);
-    background: var(--rail);
-  }
-
-  .panel-slider::-webkit-slider-thumb {
-    appearance: none;
-    width: var(--panel-size-thumb);
-    height: var(--panel-size-thumb);
-    margin-top: calc((var(--panel-size-rail) - var(--panel-size-thumb)) / 2);
-    border: 0;
-    border-radius: var(--panel-radius-pill);
-    background: var(--panel-color-thumb);
-  }
-
-  .panel-slider::-moz-range-thumb {
-    width: var(--panel-size-thumb);
-    height: var(--panel-size-thumb);
-    border: 0;
-    border-radius: var(--panel-radius-pill);
-    background: var(--panel-color-thumb);
-  }
 }
