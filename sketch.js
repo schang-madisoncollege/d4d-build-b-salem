@@ -9,7 +9,8 @@ const SCALE = DISPLAY_W / FRAME_W;
 // "Range in" column of the SPEC.md mapping table. Values outside clamp to the ends.
 const TEMP_IN = [-10, 90]; // °F, rows 1 and 2
 const WIND_IN = [0, 40]; // mph, row 3
-const RAIN_IN = [0, 10]; // mm/h, row 4
+const RAIN_IN = [0, 0.4]; // in/h, row 4
+const RAIN_SYMLOG_CONSTANT = 0.04; // in/h, row 4: scaleSymlog().constant(0.04)
 const CLOUD_IN = [0, 100]; // %, row 5
 
 // Composition layer 7: rain streaks scatter with fixed random seed 1.
@@ -86,10 +87,11 @@ function lineLean(mph, leanMax) {
   return Math.sqrt(toUnit(mph, WIND_IN)) * leanMax;
 }
 
-// Row 4: scaleSymlog().constant(1), 0..10 mm/h -> 0..1 (log1p), clamped.
-function wetness(mmh) {
-  const v = Math.min(Math.max(mmh, RAIN_IN[0]), RAIN_IN[1]);
-  return Math.log1p(v) / Math.log1p(RAIN_IN[1]);
+// Row 4: scaleSymlog().constant(0.04), 0..0.4 in/h -> 0..1, clamped.
+// log1p(x / 0.04) / log1p(0.4 / 0.04).
+function wetness(inh) {
+  const v = Math.min(Math.max(inh, RAIN_IN[0]), RAIN_IN[1]);
+  return Math.log1p(v / RAIN_SYMLOG_CONSTANT) / Math.log1p(RAIN_IN[1] / RAIN_SYMLOG_CONSTANT);
 }
 
 // Row 5: scaleLinear, 0..100% -> 0..veil-max opacity.
@@ -194,12 +196,12 @@ function setup() {
 function readings() {
   const f = reading('temperature_2m');
   const mph = reading('wind_speed_10m');
-  const mmh = reading('precipitation');
+  const inh = reading('precipitation');
   const cloud = reading('cloud_cover');
-  const wet = wetness(mmh);
+  const wet = wetness(inh);
   return {
     // Raw values and source for the caption.
-    f, mph, mmh, cloud,
+    f, mph, inh, cloud,
     source: captionSource(Weather.mode),
 
     spacing: ringSpacing(f, T.spacingMin, T.spacingMax),
@@ -365,11 +367,10 @@ function captionSource(mode) {
   return 'Snapshot weather';
 }
 
-// Rain (item 8): one decimal below 1 mm/h, never less than 0.1, so a drizzle
-// never reads as 0. Whole numbers from 1 mm/h up. Callers handle 0 ("None").
-function rainText(mmh) {
-  if (mmh >= 1) return String(Math.round(mmh));
-  return String(Math.max(0.1, Math.round(mmh * 10) / 10));
+// Rain (item 8): two decimals in in/h, never less than 0.01, so a drizzle
+// never reads as 0. Callers handle 0 ("None").
+function rainText(inh) {
+  return Math.max(0.01, Math.round(inh * 100) / 100).toFixed(2);
 }
 
 function updateCaption(r) {
@@ -377,9 +378,9 @@ function updateCaption(r) {
   setText('[data-reading="wind_speed_10m"]', String(Math.round(r.mph)));
   setText('[data-reading="cloud_cover"]', String(Math.round(r.cloud)));
 
-  // At 0 mm/h the rain reading is "None", with no unit.
-  const dry = r.mmh <= 0;
-  setText('[data-reading="precipitation"]', dry ? 'None' : rainText(r.mmh));
+  // At 0 in/h the rain reading is "None", with no unit.
+  const dry = r.inh <= 0;
+  setText('[data-reading="precipitation"]', dry ? 'None' : rainText(r.inh));
   const unit = document.querySelector('[data-unit="precipitation"]');
   if (unit) unit.hidden = dry;
 

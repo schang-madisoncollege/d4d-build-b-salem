@@ -81,8 +81,8 @@
             <label for="rain" class="text-label font-semibold tracking-caption-label text-(--panel-color-text-muted)">RAIN</label>
             <output for="rain" class="text-heading font-semibold"></output>
           </div>
-          <input type="range" id="rain" class="panel-slider" data-variable="precipitation" data-unit="mm/h" min="0" max="10" step="1" value="0">
-          <div class="flex justify-between text-label font-medium text-(--panel-color-text-muted)"><span>None</span><span>10 mm/h</span></div>
+          <input type="range" id="rain" class="panel-slider" data-variable="precipitation" data-unit="in/h" min="0" max="0.4" step="0.01" value="0">
+          <div class="flex justify-between text-label font-medium text-(--panel-color-text-muted)"><span>None</span><span>0.40 in/h</span></div>
         </div>
 
         <div class="flex flex-col">
@@ -135,7 +135,7 @@
         <button type="button" data-control="preset" data-value="storm" aria-pressed="false" class="flex flex-col items-start gap-(--panel-space-m) rounded-(--panel-radius-control) bg-(--panel-color-surface) p-(--panel-space-m) text-left">
           <span aria-hidden="true" class="h-(--panel-size-button) w-full bg-lichen-700"></span>
           <span class="text-heading font-semibold">Storm</span>
-          <span class="text-label font-medium text-(--panel-color-text-muted)">84°F · 40 mph · 10 mm/h · 100% cloud</span>
+          <span class="text-label font-medium text-(--panel-color-text-muted)">84°F · 40 mph · 0.40 in/h · 100% cloud</span>
         </button>
         <button type="button" data-control="preset" data-value="deep-cold" aria-pressed="false" class="flex flex-col items-start gap-(--panel-space-m) rounded-(--panel-radius-control) bg-(--panel-color-surface) p-(--panel-space-m) text-left">
           <span aria-hidden="true" class="h-(--panel-size-button) w-full bg-lichen-100"></span>

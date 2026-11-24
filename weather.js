@@ -20,7 +20,7 @@ const WEATHER_SETTINGS = {
   // Units. Match the "Range in" column of your mapping table.
   temperature_unit: "fahrenheit",
   wind_speed_unit: "mph",
-  precipitation_unit: "mm",
+  precipitation_unit: "inch",
 
   // Minutes between weather checks. Open-Meteo's current conditions come
   // from 15-minute data, so checking more often gains nothing.
@@ -67,7 +67,7 @@ const Weather = (() => {
       const data = await response.json();
       s.variables.forEach((name) => { live[name] = data.current[name]; });
       // Build B (SPEC.md Inputs): current precipitation is a sum over
-      // data.current.interval seconds. Store it as mm/h.
+      // data.current.interval seconds. Store it as in/h.
       if (typeof live.precipitation === "number" && data.current.interval) {
         live.precipitation = (live.precipitation * 3600) / data.current.interval;
       }

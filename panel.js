@@ -62,15 +62,31 @@
 
     renderLive(msg);
     syncSliderFills();
+    showRain(); // after touchscreen.js has synced the slider to live weather
   });
 
   // ---------- Live screen readings (formats from SPEC.md Composition item 8) ----------
 
-  function rainText(mmh) {
-    if (!(mmh > 0)) return "no rain";
-    if (mmh >= 1) return `${Math.round(mmh)} mm/h`;
-    return `${Math.max(0.1, Math.round(mmh * 10) / 10)} mm/h`;
+  // Two decimals in in/h, never less than 0.01 (SPEC.md Composition item 8).
+  function rainValue(inh) {
+    return `${Math.max(0.01, Math.round(inh * 100) / 100).toFixed(2)} in/h`;
   }
+
+  function rainText(inh) {
+    return inh > 0 ? rainValue(inh) : "no rain";
+  }
+
+  // touchscreen.js (shared, not editable) writes slider readouts with
+  // Math.round, which would show 0.12 in/h as "0 in/h". Rewrite the rain
+  // readout after it, with the caption's rule: two decimals, 0 reads "None".
+  const rainSlider = document.getElementById("rain");
+  const rainOutput = document.querySelector('output[for="rain"]');
+  function showRain() {
+    const inh = Number(rainSlider.value);
+    rainOutput.textContent = inh > 0 ? rainValue(inh) : "None";
+  }
+  rainSlider.addEventListener("input", showRain);
+  showRain();
 
   function clockText(isoLocal) {
     // Open-Meteo returns local time (timezone=America/Chicago) as "YYYY-MM-DDTHH:MM".
