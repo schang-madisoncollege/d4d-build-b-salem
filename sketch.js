@@ -200,7 +200,7 @@ function readings() {
   return {
     // Raw values and source for the caption.
     f, mph, mmh, cloud,
-    snapshot: Weather.mode === 'loading' || Weather.mode === 'offline',
+    source: captionSource(Weather.mode),
 
     spacing: ringSpacing(f, T.spacingMin, T.spacingMax),
     ringColor: ringColor(f, T.ringCold, T.ringWarm),
@@ -356,9 +356,20 @@ function setText(selector, text) {
   if (el && el.textContent !== text) el.textContent = text;
 }
 
-// Rain under 1 mm/h keeps one decimal so a drizzle does not read as "0".
+// Row 2 source label (SPEC.md Composition, item 8). weather.js reports
+// "loading" or "offline" while the snapshot drives the piece, and returns
+// from "override" to live or offline when the 3-minute countdown ends.
+function captionSource(mode) {
+  if (mode === 'override') return 'Set at the touchscreen';
+  if (mode === 'live') return 'Live weather';
+  return 'Snapshot weather';
+}
+
+// Rain (item 8): one decimal below 1 mm/h, never less than 0.1, so a drizzle
+// never reads as 0. Whole numbers from 1 mm/h up. Callers handle 0 ("None").
 function rainText(mmh) {
-  return mmh < 1 ? String(Math.round(mmh * 10) / 10) : String(Math.round(mmh));
+  if (mmh >= 1) return String(Math.round(mmh));
+  return String(Math.max(0.1, Math.round(mmh * 10) / 10));
 }
 
 function updateCaption(r) {
@@ -372,7 +383,7 @@ function updateCaption(r) {
   const unit = document.querySelector('[data-unit="precipitation"]');
   if (unit) unit.hidden = dry;
 
-  setText('#caption-source', `${r.snapshot ? 'Snapshot' : 'Live'} weather · Madison, WI`);
+  setText('#caption-source', `${r.source} · Madison, WI`);
 }
 
 // Rain / Streak, rotated to the rope's lean, at fixed scattered positions.

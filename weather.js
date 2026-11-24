@@ -29,6 +29,10 @@ const WEATHER_SETTINGS = {
   // Minutes the touchscreen's weather stays on the Display before live
   // weather comes back. Every new touch restarts the count.
   overrideMinutes: 3,
+
+  // Minutes the last live reading holds with no successful fetch before the
+  // Display falls back to the bundled snapshot (SPEC.md Inputs).
+  holdMinutes: 30,
 };
 
 const Weather = (() => {
@@ -38,6 +42,7 @@ const Weather = (() => {
   let overrideEndsAt = null;
   let overrideTimer = null;
   let updatedAt = null;
+  let lastFetchOkAt = 0; // Build B: time of the last successful fetch
 
   const current = () => ({ ...live, ...chosen });
   const hasLive = () => Object.keys(live).length > 0;
@@ -67,8 +72,14 @@ const Weather = (() => {
         live.precipitation = (live.precipitation * 3600) / data.current.interval;
       }
       updatedAt = data.current.time;
+      lastFetchOkAt = Date.now();
     } catch (error) {
       console.warn("Weather check failed. The Display keeps its last values.", error);
+      // Build B (SPEC.md Inputs): after holdMinutes with no successful fetch,
+      // drop the stale live reading so mode becomes "offline" and the snapshot drives.
+      if (Date.now() - lastFetchOkAt >= s.holdMinutes * 60 * 1000) {
+        Object.keys(live).forEach((name) => delete live[name]);
+      }
     }
     if (mode !== "override") mode = hasLive() ? "live" : "offline";
     report();
