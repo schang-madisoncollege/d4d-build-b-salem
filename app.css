@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&display=swap");
 @import "tailwindcss";
 
 /*
@@ -10,6 +11,8 @@
   Units: lengths are px at the 1080 x 1920 Display frame, angles are deg,
   opacities are % (Figma stores opacity as a percentage), counts have no unit.
   In sketch.js, parseFloat() reads any of them as a plain number.
+
+  Type: Oswald from Google Fonts, SIL Open Font License 1.1.
 */
 @theme static {
   /* Primitives: five source colors from the Tree Care site visit */
@@ -58,6 +61,21 @@
   --color-hivis-700: #f7a380;
   --color-hivis-800: #fac2aa;
   --color-hivis-900: #fce0d5;
+
+  /* Type */
+  --font-display: "Oswald", sans-serif;
+  --text-display: 88px;
+  --text-title: 72px;
+  --text-heading: 64px;
+  --text-action: 48px;
+  --text-nav: 44px;
+  --text-body: 36px;
+  --text-label: 32px;
+  --text-small: 28px;
+  --text-caption-value: 91px;
+  --text-caption-unit: 72px;
+  --text-caption-label: 26px;
+  --text-caption-credit: 25px;
 
   /* Display: artwork geometry */
   --ring-center-x: 595px;
@@ -118,6 +136,8 @@
   --panel-size-button: 128px;
   --panel-size-thumb: 88px;
   --panel-size-nav: 136px;
+  --panel-size-rail: 16px;
+  --panel-border-chip: 3px;
 }
 
 /* Preview only: scales the full-size Display to fit your browser window. */
