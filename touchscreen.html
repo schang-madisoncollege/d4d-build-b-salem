@@ -6,72 +6,157 @@
   <title>Build B Touchscreen</title>
   <link rel="stylesheet" href="output.css">
 </head>
-<body>
+<body class="m-0 bg-(--panel-color-bg)">
   <!--
-    The touchscreen page. It is landscape and sits beside the Display.
-    Style it with your own tokens from app.css.
-    Every control needs a visible label, and every touch target needs to be
-    at least 24 by 24 CSS pixels. A public touchscreen should go well past that.
+    Touchscreen, 1920 x 1080 landscape (SPEC.md Touchscreen). Four screens
+    share one frame: Panel / Status top right, the screen's controls below
+    the top third, and the nav along the bottom. No hover states, no typing.
+
+    Wiring kept for touchscreen.js (a shared course file):
+      #weather-status, #weather-countdown   the status chip
+      #back-to-live                         the Live tab
+      input[data-variable]                  weather sliders
+      button[data-control]                  button groups
+    Screen switching and "Take control" live in panel.js.
   -->
-  <main id="touchscreen">
-    <h1>[Your program name]</h1>
+  <main id="touchscreen" class="relative flex h-screen flex-col bg-(--panel-color-bg) font-display text-(--panel-color-text)">
 
-    <section aria-labelledby="weather-heading">
-      <h2 id="weather-heading">Try different weather</h2>
-
-      <!-- role="status" announces changes between live and chosen weather. -->
-      <p id="weather-status" role="status">Waiting for the Display</p>
-      <p id="weather-countdown"></p>
-
-      <!--
-        One slider per weather input you want visitors to change.
-        data-variable is the Open-Meteo name from weather.js.
-        min and max come from the "Range in" column of your mapping table.
-        Add or remove sliders to match your SPEC.md.
-      -->
-      <div>
-        <label for="temperature">Temperature</label>
-        <input type="range" id="temperature" data-variable="temperature_2m" data-unit="°F" min="-10" max="90" step="1" value="50">
-        <output for="temperature"></output>
+    <!-- Panel / Status, on every screen -->
+    <div class="absolute top-(--panel-space-l) right-(--panel-space-l) flex flex-col items-end gap-(--panel-space-s)">
+      <div class="rounded-(--panel-radius-pill) border-(length:--panel-border-chip) border-(--panel-color-text-muted) px-(--panel-space-m) py-(--panel-space-s) text-body font-medium">
+        <!-- role="status" announces changes between live and chosen weather. -->
+        <p id="weather-status" role="status">Waiting for the Display</p>
+        <!-- Outside the live region so a screen reader does not read it every second. -->
+        <p id="weather-countdown" class="empty:hidden"></p>
       </div>
+      <p class="text-small font-medium text-(--panel-color-text-muted)">
+        <a href="https://open-meteo.com/">Weather data by Open-Meteo.com · CC BY 4.0</a>
+      </p>
+    </div>
 
-      <div>
-        <label for="wind">Wind</label>
-        <input type="range" id="wind" data-variable="wind_speed_10m" data-unit="mph" min="0" max="40" step="1" value="8">
-        <output for="wind"></output>
+    <!-- Live -->
+    <section id="screen-live" role="tabpanel" aria-labelledby="back-to-live" class="flex flex-1 flex-col px-(--panel-space-l) pt-(--panel-space-l)">
+      <h1 class="text-title font-semibold">Live weather</h1>
+      <p id="live-updated" class="text-body font-medium text-(--panel-color-text-muted)">Madison, WI</p>
+
+      <div class="flex flex-1 flex-col items-center justify-center gap-(--panel-space-l)">
+        <p class="flex gap-(--panel-space-l) text-display font-semibold" aria-label="Current weather">
+          <span id="live-temperature"></span>
+          <span id="live-wind"></span>
+          <span id="live-rain"></span>
+          <span id="live-cloud"></span>
+        </p>
+        <button type="button" id="take-control" class="h-(--panel-size-button) rounded-(--panel-radius-pill) bg-(--panel-color-accent) px-(--panel-space-l) text-action font-semibold text-(--panel-color-on-accent)">Take control</button>
+        <p class="text-body font-medium text-(--panel-color-text-muted)">Change the weather yourself. The display goes back to live weather 3 minutes after the last touch.</p>
       </div>
-
-      <div>
-        <label for="rain">Rain</label>
-        <input type="range" id="rain" data-variable="precipitation" data-unit="mm/h" min="0" max="10" step="1" value="0">
-        <output for="rain"></output>
-      </div>
-
-      <div>
-        <label for="cloud">Cloud</label>
-        <input type="range" id="cloud" data-variable="cloud_cover" data-unit="%" min="0" max="100" step="1" value="40">
-        <output for="cloud"></output>
-      </div>
-
-      <button type="button" id="back-to-live">Back to live weather</button>
     </section>
 
-    <!--
-      Your second control. Replace this example.
-      Buttons in the same data-control group act as a set: the one tapped
-      is marked pressed. Your sketch.js listens for the control name.
-    -->
-    <section aria-labelledby="control-heading">
-      <h2 id="control-heading">[Your control]</h2>
-      <button type="button" data-control="example" data-value="first" aria-pressed="true">[First option]</button>
-      <button type="button" data-control="example" data-value="second" aria-pressed="false">[Second option]</button>
+    <!-- Set conditions -->
+    <section id="screen-set" role="tabpanel" aria-labelledby="tab-set" hidden class="flex flex-1 flex-col px-(--panel-space-l) pt-(--panel-space-l)">
+      <h1 class="text-title font-semibold">Set conditions</h1>
+      <p class="text-body font-medium text-(--panel-color-text-muted)">Drag a slider. The display follows as you move.</p>
+
+      <!-- Ranges are the "Range in" column of SPEC.md's mapping table. -->
+      <div class="grid flex-1 grid-cols-2 content-center gap-x-(--panel-space-l) gap-y-(--panel-space-m)">
+        <div class="flex flex-col">
+          <div class="flex items-baseline justify-between">
+            <label for="temperature" class="text-label font-semibold tracking-caption-label text-(--panel-color-text-muted)">TEMPERATURE</label>
+            <output for="temperature" class="text-heading font-semibold"></output>
+          </div>
+          <input type="range" id="temperature" class="panel-slider" data-variable="temperature_2m" data-unit="°F" min="-10" max="90" step="1" value="50">
+          <div class="flex justify-between text-label font-medium text-(--panel-color-text-muted)"><span>−10°F</span><span>90°F</span></div>
+        </div>
+
+        <div class="flex flex-col">
+          <div class="flex items-baseline justify-between">
+            <label for="wind" class="text-label font-semibold tracking-caption-label text-(--panel-color-text-muted)">WIND</label>
+            <output for="wind" class="text-heading font-semibold"></output>
+          </div>
+          <input type="range" id="wind" class="panel-slider" data-variable="wind_speed_10m" data-unit="mph" min="0" max="40" step="1" value="8">
+          <div class="flex justify-between text-label font-medium text-(--panel-color-text-muted)"><span>0</span><span>40 mph</span></div>
+        </div>
+
+        <div class="flex flex-col">
+          <div class="flex items-baseline justify-between">
+            <label for="rain" class="text-label font-semibold tracking-caption-label text-(--panel-color-text-muted)">RAIN</label>
+            <output for="rain" class="text-heading font-semibold"></output>
+          </div>
+          <input type="range" id="rain" class="panel-slider" data-variable="precipitation" data-unit="mm/h" min="0" max="10" step="1" value="0">
+          <div class="flex justify-between text-label font-medium text-(--panel-color-text-muted)"><span>None</span><span>10 mm/h</span></div>
+        </div>
+
+        <div class="flex flex-col">
+          <div class="flex items-baseline justify-between">
+            <label for="cloud" class="text-label font-semibold tracking-caption-label text-(--panel-color-text-muted)">CLOUD</label>
+            <output for="cloud" class="text-heading font-semibold"></output>
+          </div>
+          <input type="range" id="cloud" class="panel-slider" data-variable="cloud_cover" data-unit="%" min="0" max="100" step="1" value="40">
+          <div class="flex justify-between text-label font-medium text-(--panel-color-text-muted)"><span>0%</span><span>100%</span></div>
+        </div>
+      </div>
     </section>
 
-    <!-- If your Open-Meteo credit goes on the touchscreen, keep this line. If it goes on the Display, delete it. -->
-    <p><a href="https://open-meteo.com/">Weather data by Open-Meteo.com</a></p>
+    <!-- Scrub time: layout only. History data and the scrubber come in Phase 4. -->
+    <section id="screen-scrub" role="tabpanel" aria-labelledby="tab-scrub" hidden class="flex flex-1 flex-col px-(--panel-space-l) pt-(--panel-space-l)">
+      <h1 class="text-title font-semibold">Scrub time</h1>
+      <p class="text-body font-medium text-(--panel-color-text-muted)">Move through a day or a season of real Madison weather</p>
+
+      <div class="flex flex-1 flex-col justify-center gap-(--panel-space-l)">
+        <div class="flex items-center justify-between">
+          <div role="group" aria-label="Time range" class="flex rounded-(--panel-radius-pill) bg-(--panel-color-surface) p-(--panel-space-s)">
+            <button type="button" data-control="scrub-range" data-value="day" aria-pressed="true" class="min-h-(--panel-size-target-min) rounded-(--panel-radius-pill) px-(--panel-space-l) text-action font-semibold aria-pressed:bg-(--panel-color-accent) aria-pressed:text-(--panel-color-on-accent)">Day</button>
+            <button type="button" data-control="scrub-range" data-value="season" aria-pressed="false" class="min-h-(--panel-size-target-min) rounded-(--panel-radius-pill) px-(--panel-space-l) text-action font-semibold aria-pressed:bg-(--panel-color-accent) aria-pressed:text-(--panel-color-on-accent)">Season</button>
+          </div>
+          <p id="scrub-readout" class="text-nav font-medium"></p>
+        </div>
+
+        <div class="flex flex-col">
+          <div class="flex items-baseline justify-between">
+            <label for="scrub" id="scrub-label" class="text-label font-semibold tracking-caption-label text-(--panel-color-text-muted)">YESTERDAY · HOURLY HISTORY</label>
+            <output for="scrub" id="scrub-time" class="text-heading font-semibold"></output>
+          </div>
+          <input type="range" id="scrub" class="panel-slider" min="0" max="23" step="1" value="23" disabled>
+          <div class="flex justify-between text-label font-medium text-(--panel-color-text-muted)"><span id="scrub-start">12 AM</span><span id="scrub-end">11 PM</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Presets: layout only. Setting all four inputs comes in Phase 3. -->
+    <section id="screen-presets" role="tabpanel" aria-labelledby="tab-presets" hidden class="flex flex-1 flex-col px-(--panel-space-l) pt-(--panel-space-l)">
+      <h1 class="text-title font-semibold">Presets</h1>
+      <p class="text-body font-medium text-(--panel-color-text-muted)">Tap a look to show it on the display</p>
+
+      <div class="grid flex-1 grid-cols-3 content-center gap-(--panel-space-l)">
+        <button type="button" data-control="preset" data-value="calm" aria-pressed="false" class="flex flex-col items-start gap-(--panel-space-m) rounded-(--panel-radius-control) bg-(--panel-color-surface) p-(--panel-space-m) text-left">
+          <span aria-hidden="true" class="h-(--panel-size-button) w-full bg-sapwood-100"></span>
+          <span class="text-heading font-semibold">Calm</span>
+          <span class="text-label font-medium text-(--panel-color-text-muted)">68°F · 3 mph · no rain · 40% cloud</span>
+        </button>
+        <button type="button" data-control="preset" data-value="storm" aria-pressed="false" class="flex flex-col items-start gap-(--panel-space-m) rounded-(--panel-radius-control) bg-(--panel-color-surface) p-(--panel-space-m) text-left">
+          <span aria-hidden="true" class="h-(--panel-size-button) w-full bg-lichen-700"></span>
+          <span class="text-heading font-semibold">Storm</span>
+          <span class="text-label font-medium text-(--panel-color-text-muted)">84°F · 40 mph · 10 mm/h · 100% cloud</span>
+        </button>
+        <button type="button" data-control="preset" data-value="deep-cold" aria-pressed="false" class="flex flex-col items-start gap-(--panel-space-m) rounded-(--panel-radius-control) bg-(--panel-color-surface) p-(--panel-space-m) text-left">
+          <span aria-hidden="true" class="h-(--panel-size-button) w-full bg-lichen-100"></span>
+          <span class="text-heading font-semibold">Deep cold</span>
+          <span class="text-label font-medium text-(--panel-color-text-muted)">−8°F · 12 mph · no rain · 0% cloud</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Nav: four Panel / Nav tab instances. The active tab has a surface fill
+         and an orange underline, so selection is never shown by color alone. -->
+    <nav aria-label="Screens" role="tablist" class="flex gap-(--panel-space-m) px-(--panel-space-l) pb-(--panel-space-m)">
+      <button type="button" role="tab" id="back-to-live" data-screen="live" aria-controls="screen-live" aria-selected="true" class="h-(--panel-size-nav) flex-1 rounded-(--panel-radius-control) text-nav font-medium text-(--panel-color-text-muted) aria-selected:bg-(--panel-color-surface) aria-selected:text-(--panel-color-text) aria-selected:underline aria-selected:decoration-(--panel-color-accent)">Live</button>
+      <button type="button" role="tab" id="tab-set" data-screen="set" aria-controls="screen-set" aria-selected="false" class="h-(--panel-size-nav) flex-1 rounded-(--panel-radius-control) text-nav font-medium text-(--panel-color-text-muted) aria-selected:bg-(--panel-color-surface) aria-selected:text-(--panel-color-text) aria-selected:underline aria-selected:decoration-(--panel-color-accent)">Set conditions</button>
+      <button type="button" role="tab" id="tab-scrub" data-screen="scrub" aria-controls="screen-scrub" aria-selected="false" class="h-(--panel-size-nav) flex-1 rounded-(--panel-radius-control) text-nav font-medium text-(--panel-color-text-muted) aria-selected:bg-(--panel-color-surface) aria-selected:text-(--panel-color-text) aria-selected:underline aria-selected:decoration-(--panel-color-accent)">Scrub time</button>
+      <button type="button" role="tab" id="tab-presets" data-screen="presets" aria-controls="screen-presets" aria-selected="false" class="h-(--panel-size-nav) flex-1 rounded-(--panel-radius-control) text-nav font-medium text-(--panel-color-text-muted) aria-selected:bg-(--panel-color-surface) aria-selected:text-(--panel-color-text) aria-selected:underline aria-selected:decoration-(--panel-color-accent)">Presets</button>
+    </nav>
   </main>
 
   <script src="channel.js"></script>
   <script src="touchscreen.js"></script>
+  <script src="panel.js"></script>
 </body>
 </html>

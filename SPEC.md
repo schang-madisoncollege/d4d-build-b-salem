@@ -16,7 +16,7 @@ Partner program: [Madison College Tree Care](https://madisoncollege.edu/academic
 |---|---|---|---|---|
 | Temperature | `temperature_2m` with `temperature_unit=fahrenheit` | °F | −10 to 90 °F (typical 50) | Polled every 15 min; current conditions are 15-minutely |
 | Wind speed | `wind_speed_10m` with `wind_speed_unit=mph` | mph | 0 to 40 mph (typical 8) | Every 15 min |
-| Precipitation | `precipitation` | mm, converted to mm/h | 0 to 10 mm/h (typical 0) | Every 15 min. Current precipitation is a sum over the response `interval` (seconds), so mm/h = value × 3600 / interval. History and scrub use hourly `precipitation`, which is already a preceding-hour sum. |
+| Precipitation | `precipitation` with `precipitation_unit=inch` | in, converted to in/h | 0 to 0.4 in/h (typical 0) | Every 15 min. Current precipitation is a sum over the response `interval` (seconds), so in/h = value × 3600 / interval. History and scrub use hourly `precipitation`, which is already a preceding-hour sum. |
 | Cloud cover | `cloud_cover` | % | 0 to 100% (typical 40) | Every 15 min |
 
 Location: Madison, WI, latitude 43.07, longitude −89.40, `timezone=America/Chicago`. Values outside a range clamp to its end. The bundled snapshot drives the piece at startup until the first live fetch arrives. After that, the last live reading holds until 30 minutes pass with no successful fetch (two missed polls). Then the snapshot takes over until a fetch succeeds again. The caption names the source (see Composition, item 8).
@@ -32,7 +32,7 @@ One row per behavior. Every row needs a numeric range in and a numeric range out
 | Temperature | −10 to 90 °F | **1. Ring spacing (hero):** distance between growth rings, at the 1080 × 1920 frame | 30 to 90 px, linear | Rings spread through the warm afternoon and crowd together overnight. The whole field redraws on each update; nothing accumulates. |
 | Temperature | −10 to 90 °F | **2. Ring color (hero):** stroke color of every ring | #9AA77C (color/lichen/100) to #78522C (color/heartwood/300), interpolated in Lab, linear | Rings read green at dawn in cold months and brown by the warm part of the day. |
 | Wind speed | 0 to 40 mph | **3. Rope lean:** angle of the climbing rope, second line, and rain streaks from vertical | 0 to 32°, square root, stops at 32° | Small winds move the rope visibly; past 25 mph it barely changes. It holds still between updates. |
-| Precipitation | 0 to 10 mm/h | **4. Wetness:** one value rendered two ways, a color/bark/100 overlay and rain streaks | 0 to 1, log1p. Overlay 0 to 60% opacity; streaks 0 to 48 | Light drizzle already shows; a downpour stops at 60% overlay and 48 streaks, so the rings never disappear. No streaks and no darkening on a dry day. |
+| Precipitation | 0 to 0.4 in/h | **4. Wetness:** one value rendered two ways, a color/bark/100 overlay and rain streaks | 0 to 1, log1p. Overlay 0 to 60% opacity; streaks 0 to 48 | Light drizzle already shows; a downpour stops at 60% overlay and 48 streaks, so the rings never disappear. No streaks and no darkening on a dry day. |
 | Cloud cover | 0 to 100% | **5. Veil:** color/lichen/700 laid over the artwork | 0 to 55% opacity, linear | Clear mornings show the full color; an overcast afternoon flattens the whole face toward pale green-gray. |
 
 In code (d3-scale and chroma.js, versions pinned in the starter repo):
@@ -41,14 +41,14 @@ In code (d3-scale and chroma.js, versions pinned in the starter repo):
 ringSpacing = scaleLinear().domain([-10, 90]).range([30, 90]).clamp(true)
 ringColor   = chroma.scale([lichen100, heartwood300]).mode('lab').domain([-10, 90])
 lineLean    = scaleSqrt().domain([0, 40]).range([0, 32]).clamp(true)
-wetness     = scaleSymlog().constant(1).domain([0, 10]).range([0, 1]).clamp(true)   // log1p
+wetness     = scaleSymlog().constant(0.04).domain([0, 0.4]).range([0, 1]).clamp(true)   // log1p(x / 0.04)
 // render: overlayOpacity = wetness * 0.6, streakCount = Math.round(wetness * 48)
 veil        = scaleLinear().domain([0, 100]).range([0, 0.55]).clamp(true)
 
 // Check values
 // 50 °F → 66 px       68 °F → 76.8 px     −8 °F → 31.2 px
 // 3 mph → 8.8°        12 mph → 17.5°      40 mph → 32°
-// 1 mm/h → 17% wet, 14 streaks            10 mm/h → 60%, 48 streaks
+// 0.04 in/h → 17% wet, 14 streaks        0.4 in/h → 60%, 48 streaks
 // 40% cloud → 0.22    100% cloud → 0.55
 ```
 
@@ -56,7 +56,7 @@ Hero effect: Growth rings. Rows 1 and 2, marked (hero) in the table, drive it. T
 
 ## Composition
 
-Reference frames: page Reference Frames, "Reference frames — 1080 × 1920": Calm (68 °F, 3 mph, 0 mm/h, 40%), Storm (extreme: 84 °F, 40 mph, 10 mm/h, 100%), and Deep cold (−8 °F, 12 mph, 0 mm/h, 0%). They are vector layers drawn from the mapping table, with every value bound to a token. The older raster frames are kept and labeled ARCHIVE.
+Reference frames: page Reference Frames, "Reference frames — 1080 × 1920": Calm (68 °F, 3 mph, 0 in/h, 40%), Storm (extreme: 84 °F, 40 mph, 0.4 in/h, 100%), and Deep cold (−8 °F, 12 mph, 0 in/h, 0%). They are vector layers drawn from the mapping table, with every value bound to a token. The older raster frames are kept and labeled ARCHIVE.
 
 Layer order, bottom to top, at 1080 × 1920:
 
@@ -67,7 +67,7 @@ Layer order, bottom to top, at 1080 × 1920:
 5. Second line: `color/line`, 12 px, parallel to the rope, its center 50 px to the right of the rope's center.
 6. Cloud veil: `color/veil` at cloud × 55%.
 7. Rain: the component Rain / Streak (4 × 111 px, Sapwood/100 at 55%), rotated to the rope's lean and scattered with fixed random seed 1, so the streaks stay put between redraws.
-8. Caption: the component Weather / Current conditions, 1080 × 360, pinned to the bottom. Build it as HTML laid over the canvas, not drawn into it, so the text stays crisp and readable by screen readers. It is a vertical flex box: padding `--caption-pad-top`, `--space-safe` on both sides, and `--caption-pad-bottom`, with the rows spread apart (space-between). Across the top runs a `--caption-rule`-tall bar in `--color-accent`. Row 1 holds four readings (TEMP, WIND, RAIN, CLOUD), spread apart. Each one is a label (`--text-caption-label`, letter spacing `--tracking-caption-label`) above a reading, with `--caption-label-gap` between them. The reading is a value (`--text-caption-value`) and a unit (`--text-caption-unit`) aligned on their baseline, `--caption-unit-gap` apart. At 0 mm/h rain, the rain reading is "None", with no unit. Temperature, wind, and cloud show whole numbers. Rain below 1 mm/h shows one decimal, and never less than 0.1, so a drizzle never reads as 0. From 1 mm/h up, it shows whole numbers. Row 2 has the source and location on the left: "Live weather · Madison, WI" for live readings, "Snapshot weather · Madison, WI" while the snapshot drives the piece, and "Set at the touchscreen · Madison, WI" while a slider or preset overrides the weather. It switches back to the live or snapshot label when the 3-minute countdown ends. and the data credit on the right, both `--text-caption-credit`. Text is `--color-caption-text` on `--color-caption-bg`: Oswald SemiBold for readings and labels, Medium for row 2.
+8. Caption: the component Weather / Current conditions, 1080 × 360, pinned to the bottom. Build it as HTML laid over the canvas, not drawn into it, so the text stays crisp and readable by screen readers. It is a vertical flex box: padding `--caption-pad-top`, `--space-safe` on both sides, and `--caption-pad-bottom`, with the rows spread apart (space-between). Across the top runs a `--caption-rule`-tall bar in `--color-accent`. Row 1 holds four readings (TEMP, WIND, RAIN, CLOUD), spread apart. Each one is a label (`--text-caption-label`, letter spacing `--tracking-caption-label`) above a reading, with `--caption-label-gap` between them. The reading is a value (`--text-caption-value`, line height 1.2) and a unit (`--text-caption-unit`) aligned on their baseline, `--caption-unit-gap` apart. At 0 in/h rain, the rain reading is "None", with no unit. Temperature, wind, and cloud show whole numbers. Rain shows two decimals in in/h, and never less than 0.01, so a drizzle never reads as 0. Row 2 has the source and location on the left: "Live weather · Madison, WI" for live readings, "Snapshot weather · Madison, WI" while the snapshot drives the piece, and "Set at the touchscreen · Madison, WI" while a slider or preset overrides the weather. It switches back to the live or snapshot label when the 3-minute countdown ends. and the data credit on the right, both `--text-caption-credit`. Text is `--color-caption-text` on `--color-caption-bg`: Oswald SemiBold for readings and labels, Medium for row 2.
 
 ## Acceptance checks
 
@@ -76,7 +76,7 @@ One line per mapping row. Values outside a range clamp, so each check includes t
 1. **Ring spacing:** at −10 °F the rings are 30 px apart, at 68 °F 76.8 px, at 90 °F 90 px. At 100 °F they stay at 90 px.
 2. **Ring color:** at −10 °F every ring is #9AA77C, at 68 °F #81643D, at 90 °F #78522C (each within 2 per channel, Lab interpolation).
 3. **Rope lean:** at 0 mph the rope hangs vertical, at 12 mph it leans 17.5°, at 40 mph 32°. At 60 mph it stays at 32°.
-4. **Wetness:** at 0 mm/h there is no overlay and no streaks. At 1 mm/h the overlay is 17% with 14 streaks. At 10 mm/h it is 60% with 48 streaks, and it stays there above 10.
+4. **Wetness:** at 0 in/h there is no overlay and no streaks. At 0.04 in/h the overlay is 17% with 14 streaks. At 0.4 in/h it is 60% with 48 streaks, and it stays there above 0.4.
 5. **Veil:** at 0% cloud there is no veil, at 40% it is at 22% opacity, at 100% at 55%.
 
 Across the build:
@@ -226,6 +226,7 @@ Units in app.css: lengths in px at the 1080 × 1920 frame, angles in deg, opacit
 | text/label | --text-label | 32px |
 | text/small | --text-small | 28px |
 | text/caption-value | --text-caption-value | 91px |
+| text/caption-value--line-height | --text-caption-value--line-height | 1.2 |
 | text/caption-unit | --text-caption-unit | 72px |
 | text/caption-label | --text-caption-label | 26px |
 | text/caption-credit | --text-caption-credit | 25px |
@@ -242,13 +243,13 @@ Designed: page Control Panel, at 1920 × 1080 landscape.
 | Live | "Take control" button | None. Opens Set conditions and starts the 3-minute countdown. |
 | Set conditions | Temperature slider, −10 to 90 °F | Row 1 (ring spacing) and row 2 (ring color) |
 | Set conditions | Wind slider, 0 to 40 mph | Row 3 (rope lean) |
-| Set conditions | Rain slider, 0 to 10 mm/h | Row 4 (wetness) |
+| Set conditions | Rain slider, 0 to 0.4 in/h | Row 4 (wetness) |
 | Set conditions | Cloud slider, 0 to 100% | Row 5 (veil) |
 | Scrub time | Day / Season toggle | None. Sets the scrubber's range: the past 24 hours or the past 12 months. |
 | Scrub time | Time scrubber over Open-Meteo history | All five rows, from the historical readings at the selected time |
-| Presets | Calm tile: 68 °F, 3 mph, 0 mm/h, 40% | All five rows |
-| Presets | Storm tile: 84 °F, 40 mph, 10 mm/h, 100% | All five rows |
-| Presets | Deep cold tile: −8 °F, 12 mph, 0 mm/h, 0% | All five rows |
+| Presets | Calm tile: 68 °F, 3 mph, 0 in/h, 40% | All five rows |
+| Presets | Storm tile: 84 °F, 40 mph, 0.4 in/h, 100% | All five rows |
+| Presets | Deep cold tile: −8 °F, 12 mph, 0 in/h, 0% | All five rows |
 | Every screen | Nav tabs: Live, Set conditions, Scrub time, Presets | None, except that Live returns all five rows to live weather immediately |
 
 Every screen uses the same frame: a top third (y 0–360, marked with a guide) that holds Panel / Status only, the controls below it, and a bottom nav of four Panel / Nav tab instances (440 × 136). Touch targets: buttons 128 px tall, slider tracks 96 px with an 88 px thumb, toggle options 280 × 112, tiles 540 × 400. There are no hover states and no typing. The status chip reads "Live weather returns in m:ss" and counts down from 3:00 after the last touch; at 0:00 the touchscreen returns to Live and the Display returns to live weather. An active tab shows a surface fill and an orange underline, so selection is never shown by color alone.

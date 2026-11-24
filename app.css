@@ -161,3 +161,55 @@
   width: auto !important;
   margin: 0 auto;
 }
+
+/*
+  Touchscreen slider (Panel / Slider). The input is the full touch target
+  (--panel-size-target-min); the rail runs between the thumb's centers at either end, filled up
+  to the thumb. panel.js sets --fill (0 to 1) from the slider's value.
+*/
+@layer components {
+  .panel-slider {
+    --thumb-half: calc(var(--panel-size-thumb) / 2);
+    --fill-at: calc(var(--thumb-half) + (100% - var(--panel-size-thumb)) * var(--fill, 0));
+    --rail: linear-gradient(
+      to right,
+      transparent var(--thumb-half),
+      var(--panel-color-accent) var(--thumb-half) var(--fill-at),
+      var(--panel-color-rail) var(--fill-at) calc(100% - var(--thumb-half)),
+      transparent calc(100% - var(--thumb-half))
+    );
+    appearance: none;
+    width: 100%;
+    height: var(--panel-size-target-min);
+    margin: 0;
+    background: transparent;
+  }
+
+  .panel-slider::-webkit-slider-runnable-track {
+    height: var(--panel-size-rail);
+    background: var(--rail);
+  }
+
+  .panel-slider::-moz-range-track {
+    height: var(--panel-size-rail);
+    background: var(--rail);
+  }
+
+  .panel-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: var(--panel-size-thumb);
+    height: var(--panel-size-thumb);
+    margin-top: calc((var(--panel-size-rail) - var(--panel-size-thumb)) / 2);
+    border: 0;
+    border-radius: var(--panel-radius-pill);
+    background: var(--panel-color-thumb);
+  }
+
+  .panel-slider::-moz-range-thumb {
+    width: var(--panel-size-thumb);
+    height: var(--panel-size-thumb);
+    border: 0;
+    border-radius: var(--panel-radius-pill);
+    background: var(--panel-color-thumb);
+  }
+}

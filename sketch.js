@@ -64,18 +64,18 @@ function clamp01(t) {
   return Math.min(1, Math.max(0, t));
 }
 
-function norm(value, [lo, hi]) {
+function toUnit(value, [lo, hi]) {
   return clamp01((value - lo) / (hi - lo));
 }
 
 // Row 1: scaleLinear, −10..90 °F -> spacing-min..spacing-max.
 function ringSpacing(f, min, max) {
-  return min + norm(f, TEMP_IN) * (max - min);
+  return min + toUnit(f, TEMP_IN) * (max - min);
 }
 
 // Row 2: chroma.scale([cold, warm]).mode('lab'), −10..90 °F.
 function ringColor(f, cold, warm) {
-  const t = norm(f, TEMP_IN);
+  const t = toUnit(f, TEMP_IN);
   const a = hexToLab(cold);
   const b = hexToLab(warm);
   return labToHex(a.map((v, i) => v + (b[i] - v) * t));
@@ -83,7 +83,7 @@ function ringColor(f, cold, warm) {
 
 // Row 3: scaleSqrt, 0..40 mph -> 0..lean-max degrees, clamped.
 function lineLean(mph, leanMax) {
-  return Math.sqrt(norm(mph, WIND_IN)) * leanMax;
+  return Math.sqrt(toUnit(mph, WIND_IN)) * leanMax;
 }
 
 // Row 4: scaleSymlog().constant(1), 0..10 mm/h -> 0..1 (log1p), clamped.
@@ -94,7 +94,7 @@ function wetness(mmh) {
 
 // Row 5: scaleLinear, 0..100% -> 0..veil-max opacity.
 function veil(cloud, veilMax) {
-  return norm(cloud, CLOUD_IN) * veilMax;
+  return toUnit(cloud, CLOUD_IN) * veilMax;
 }
 
 // ---------- sRGB <-> CIE Lab (D65), as chroma.js does it ----------
